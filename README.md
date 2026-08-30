@@ -1,7 +1,8 @@
 Xenos
 =====
 
-Windows dll injector. Based on Blackbone library - https://github.com/DarthTon/Blackbone
+Windows dll injector. Based on Blackbone library - https://github.com/DarthTon/Blackbone  
+The source project address of Xenos: https://github.com/DarthTon/Xenos
 
 ## Features ##
 
@@ -10,6 +11,8 @@ Windows dll injector. Based on Blackbone library - https://github.com/DarthTon/B
 - Manual map of kernel drivers (driver required)
 - Injection of pure managed images without proxy dll
 - Windows 7 cross-session and cross-desktop injection
+- Adapt to the display mode of Windows 11
+- Convenient process search
 - Injection into native processes (those having only ntdll loaded)
 - Calling custom initialization routine after injection
 - Unlinking module after injection
