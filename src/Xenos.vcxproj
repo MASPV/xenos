@@ -242,6 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Xenos.rc" />
+    <Manifest Include="Xenos.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="alien.ico" />
