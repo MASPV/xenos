@@ -1,4 +1,5 @@
 #include "DlgSettings.h"
+#include "Lang.h"
 #include "DriverExtract.h"
 #include "resource.h"
 
@@ -47,12 +48,12 @@ INT_PTR DlgSettings::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     _mmapOptions.hideVad.disable();
 
     // Fill injection types
-    _injectionType.Add( L"Native inject", Normal );
-    _injectionType.Add( L"Manual map", Manual );
+    _injectionType.Add( lang::Tr( L"Native inject" ), Normal );
+    _injectionType.Add( lang::Tr( L"Manual map" ), Manual );
 
-    _injectionType.Add( L"Kernel (CreateThread)", Kernel_Thread );
-    _injectionType.Add( L"Kernel (APC)", Kernel_APC );
-    _injectionType.Add( L"Kernel (Manual map)", Kernel_MMap );
+    _injectionType.Add( lang::Tr( L"Kernel (CreateThread)" ), Kernel_Thread );
+    _injectionType.Add( lang::Tr( L"Kernel (APC)" ), Kernel_APC );
+    _injectionType.Add( lang::Tr( L"Kernel (Manual map)" ), Kernel_MMap );
     //_injectionType.Add( L"Kernel driver manual map", Kernel_DriverMap );
 
     // Disable some driver-dependent stuff
@@ -69,6 +70,8 @@ INT_PTR DlgSettings::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     // Setup interface from current config
     UpdateFromConfig();
     UpdateInterface();
+
+    lang::LocalizeDialog( _hwnd );
 
     return TRUE;
 }

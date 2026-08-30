@@ -207,6 +207,7 @@
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="InjectionCore.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Lang.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="Routines.cpp" />
     <ClCompile Include="DlgModules.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="ComboBox.hpp" />
     <ClInclude Include="DriverExtract.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="Lang.h" />
     <ClInclude Include="ProfileMgr.h" />
     <ClInclude Include="Control.hpp" />
     <ClInclude Include="Dialog.hpp" />

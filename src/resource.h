@@ -63,6 +63,8 @@
 #define IDC_CHECK1                      1031
 #define IDC_KRN_HANDLE                  1031
 #define IDC_SKIP                        1032
+#define IDC_PROC_FILTER                 1033
+#define IDC_FILTER_HELP                 1034
 #define ID_TOOLS_EJECTMODULES           32772
 #define ID_TOOLS_PROTECTSELF            32773
 #define ID_TOOLS_PROTECT                32774
@@ -70,6 +72,8 @@
 #define ID_PROFILES_SAVE                32776
 #define ID_ACCEL_SAVE                   32777
 #define ID_ACCEL_OPEN                   32778
+#define ID_SETTINGS_LANG_EN             32780
+#define ID_SETTINGS_LANG_ZH             32781
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

@@ -12,6 +12,8 @@
 #include "Message.hpp"
 #include "InjectionCore.h"
 
+#include "Lang.h"
+
 #include "Log.h"
 
 class MainDlg : public Dialog
@@ -62,6 +64,12 @@ private:
     /// </summary>
     /// <returns>Error code</returns>
     DWORD FillProcessList();
+
+    /// <summary>
+    /// Apply current filter (PID / name) to the cached process list
+    /// </summary>
+    /// <returns>Error code</returns>
+    DWORD ApplyProcessFilter();
 
     /// Set current process
     /// </summary>
@@ -119,6 +127,8 @@ private:
     MSG_HANDLER( OnSettings);
     MSG_HANDLER( OnDropDown );
     MSG_HANDLER( OnSelChange );
+    MSG_HANDLER( OnFilterChange );
+    MSG_HANDLER( OnFilterHelp );
     MSG_HANDLER( OnDragDrop );
     MSG_HANDLER( OnExistingProcess );
 
@@ -128,7 +138,12 @@ private:
     MSG_HANDLER( OnEjectModules );
     MSG_HANDLER( OnProtectSelf );
 
+    MSG_HANDLER( OnLanguageEn );
+    MSG_HANDLER( OnLanguageZh );
+
 private:
+    void ApplyLanguage();
+
     StartAction     _action;        // Starting action
     std::wstring    _defConfig;     // Profile to load on start
     InjectionCore   _core;          // Injection implementation
@@ -142,6 +157,8 @@ private:
     // Interface controls
     //  
     ctrl::ComboBox _procList;       // Process list
+    ctrl::EditBox _procFilter;      // Process filter box
+    std::vector<blackbone::ProcessInfo> _procInfo; // Cached process list
     ctrl::ListView _modules;        // Image list
 
     ctrl::StatusBar _status;        // Status bar

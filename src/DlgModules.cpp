@@ -1,4 +1,5 @@
 #include "DlgModules.h"
+#include "Lang.h"
 #include "Message.hpp"
 
 
@@ -28,12 +29,14 @@ INT_PTR ModulesDlg::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     //
     // Insert columns
     //
-    _modList.AddColumn( L"Name",       100, Name );
-    _modList.AddColumn( L"Image Base", 100, ImageBase );
-    _modList.AddColumn( L"Platform",   60,  Platform );
-    _modList.AddColumn( L"Load type",  80,  LoadType );
+    _modList.AddColumn( lang::Tr( L"Name" ),       100, Name );
+    _modList.AddColumn( lang::Tr( L"Image Base" ), 100, ImageBase );
+    _modList.AddColumn( lang::Tr( L"Platform" ),   60,  Platform );
+    _modList.AddColumn( lang::Tr( L"Load type" ),  80,  LoadType );
 
     RefreshList();
+
+    lang::LocalizeDialog( _hwnd );
 
     return TRUE;
 }
@@ -105,30 +108,30 @@ void ModulesDlg::RefreshList( )
     for (auto& mod : modsAll)
     {
         wchar_t address[64];
-        const wchar_t* platfom = nullptr;
-        const wchar_t* detected = nullptr;
+        std::wstring platfom;
+        std::wstring detected;
 
         wsprintf( address, L"0x%08I64x", mod.second->baseAddress );
 
         // Module platform
         if (mod.second->type == blackbone::mt_mod32)
-            platfom = L"32 bit";
+            platfom = lang::Tr( L"32 bit" );
         else if (mod.second->type == blackbone::mt_mod64)
-            platfom = L"64 bit";
+            platfom = lang::Tr( L"64 bit" );
         else
-            platfom = L"Unknown";
+            platfom = lang::Tr( L"Unknown" );
 
         // Mapping type
         if (mod.second->manual == true)
-            detected = L"Manual map";
+            detected = lang::Tr( L"Manual map" );
         else if (modsLdr.count( mod.first ))
-            detected = L"Normal";
+            detected = lang::Tr( L"Normal" );
         else if (modsSec.count( mod.first ))
-            detected = L"Section only";
+            detected = lang::Tr( L"Section only" );
         else if (mod.second->name.find( L"Unknown_0x" ) == 0)
-            detected = L"PE header";
+            detected = lang::Tr( L"PE header" );
         else
-            detected = L"Unknown";
+            detected = lang::Tr( L"Unknown" );
 
         _modList.AddItem( mod.second->name, static_cast<LPARAM>(mod.second->baseAddress), { address, platfom, detected } );
     }

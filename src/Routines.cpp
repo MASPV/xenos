@@ -1,5 +1,8 @@
 #include "MainDlg.h"
+#include "Lang.h"
 #include "DriverExtract.h"
+
+#include <cwctype>
 
 /// <summary>
 /// Load configuration from file
@@ -104,15 +107,45 @@ DWORD MainDlg::SaveConfig( const std::wstring& path /*= L""*/ )
 /// <returns>Error code</returns>
 DWORD MainDlg::FillProcessList()
 {
+    auto found = blackbone::Process::EnumByNameOrPID( 0, L"" ).result( std::vector<blackbone::ProcessInfo>() );
+    _procInfo = found;
+
+    return ApplyProcessFilter();
+}
+
+/// <summary>
+/// Apply current filter (PID / name) to the cached process list
+/// </summary>
+/// <returns>Error code</returns>
+DWORD MainDlg::ApplyProcessFilter()
+{
+    if (_procInfo.empty())
+        FillProcessList();
+
     _procList.reset();
 
-    auto found = blackbone::Process::EnumByNameOrPID( 0, L"" ).result( std::vector<blackbone::ProcessInfo>() );
-    for (auto& proc : found)
-    {
-        wchar_t text[255] = { 0 };
-        swprintf_s( text, L"%ls (%d)", proc.imageName.c_str(), proc.pid );
+    std::wstring filter = _procFilter.text();
+    std::wstring filterLower = filter;
+    for (auto& c : filterLower)
+        c = (wchar_t)towlower( c );
 
-        _procList.Add( text, proc.pid );
+    for (auto& proc : _procInfo)
+    {
+        // Name contains filter (case-insensitive)
+        std::wstring name = proc.imageName;
+        for (auto& c : name)
+            c = (wchar_t)towlower( c );
+
+        bool match = filter.empty() ||
+                     name.find( filterLower ) != std::wstring::npos ||
+                     std::to_wstring( proc.pid ).find( filterLower ) != std::wstring::npos;
+
+        if (match)
+        {
+            wchar_t text[255] = { 0 };
+            swprintf_s( text, L"%ls (%d)", proc.imageName.c_str(), proc.pid );
+            _procList.Add( text, proc.pid );
+        }
     }
 
     return ERROR_SUCCESS;
@@ -336,15 +369,15 @@ DWORD MainDlg::LoadImageFile( const std::wstring& path )
 /// <param name="exports">Module exports</param>
 void MainDlg::AddToModuleList( std::shared_ptr<blackbone::pe::PEImage>& img )
 {
-    const wchar_t* platfom = nullptr;
+    std::wstring platfom;
 
     // Module platform
     if (img->mType() == blackbone::mt_mod32)
-        platfom = L"32 bit";
+        platfom = lang::Tr( L"32 bit" );
     else if (img->mType() == blackbone::mt_mod64)
-        platfom = L"64 bit";
+        platfom = lang::Tr( L"64 bit" );
     else
-        platfom = L"Unknown";
+        platfom = lang::Tr( L"Unknown" );
 
     _images.emplace_back( img );
     _modules.AddItem( blackbone::Utils::StripPath( img->path() ), 0, { platfom } );

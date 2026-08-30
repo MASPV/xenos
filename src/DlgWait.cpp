@@ -1,4 +1,5 @@
 #include "DlgWait.h"
+#include "Lang.h"
 #include <thread>
 
 DlgWait::DlgWait( InjectionCore& core, InjectContext& context )
@@ -19,7 +20,7 @@ DlgWait::~DlgWait()
 INT_PTR DlgWait::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     Dialog::OnInit( hDlg, message, wParam, lParam );
-    std::wstring text = L"Awaiting '" + blackbone::Utils::StripPath( _context.procPath ) + L"' launch...";
+    std::wstring text = lang::Tr( L"Awaiting" ) + L" '" + blackbone::Utils::StripPath( _context.procPath ) + L"' " + lang::Tr( L"launch..." );
     
     Static_SetText( GetDlgItem( hDlg, IDC_WAIT_TEXT ), text.c_str() );
     SendMessage( GetDlgItem( hDlg, IDC_WAIT_BAR ), PBM_SETMARQUEE, (WPARAM)TRUE, (LPARAM)30 );

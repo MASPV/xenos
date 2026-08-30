@@ -22,6 +22,8 @@ MainDlg::MainDlg( MainDlg::StartAction action, const std::wstring& defConfig /*=
     _events[IDC_AUTO_PROC]          = static_cast<Dialog::fnDlgProc>(&MainDlg::OnSelectExecutable);
     _events[IDC_SELECT_PROC]        = static_cast<Dialog::fnDlgProc>(&MainDlg::OnSelectExecutable);
     _events[IDC_ADD_MOD]            = static_cast<Dialog::fnDlgProc>(&MainDlg::OnLoadImage);
+    _events[IDC_PROC_FILTER]        = static_cast<Dialog::fnDlgProc>(&MainDlg::OnFilterChange);
+    _events[IDC_FILTER_HELP]        = static_cast<Dialog::fnDlgProc>(&MainDlg::OnFilterHelp);
     _events[IDC_REMOVE_MOD]         = static_cast<Dialog::fnDlgProc>(&MainDlg::OnRemoveImage);
     _events[IDC_CLEAR_MODS]         = static_cast<Dialog::fnDlgProc>(&MainDlg::OnClearImages);
     _events[CBN_DROPDOWN]           = static_cast<Dialog::fnDlgProc>(&MainDlg::OnDropDown);
@@ -30,6 +32,8 @@ MainDlg::MainDlg( MainDlg::StartAction action, const std::wstring& defConfig /*=
     _events[ID_PROFILES_SAVE]       = static_cast<Dialog::fnDlgProc>(&MainDlg::OnSaveProfile);
     _events[ID_TOOLS_PROTECT]       = static_cast<Dialog::fnDlgProc>(&MainDlg::OnProtectSelf);
     _events[ID_TOOLS_EJECTMODULES]  = static_cast<Dialog::fnDlgProc>(&MainDlg::OnEjectModules);
+    _events[ID_SETTINGS_LANG_EN]    = static_cast<Dialog::fnDlgProc>(&MainDlg::OnLanguageEn);
+    _events[ID_SETTINGS_LANG_ZH]    = static_cast<Dialog::fnDlgProc>(&MainDlg::OnLanguageZh);
 
     // Accelerators
     _events[ID_ACCEL_OPEN]          = static_cast<Dialog::fnDlgProc>(&MainDlg::OnLoadProfile);
@@ -48,6 +52,7 @@ INT_PTR MainDlg::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
     // Setup controls
     //
     _procList.Attach( _hwnd, IDC_COMBO_PROC );
+    _procFilter.Attach( _hwnd, IDC_PROC_FILTER );
     _exProc.Attach( _hwnd, IDC_EXISTING_PROC );
     _newProc.Attach( _hwnd, IDC_NEW_PROC );
     _autoProc.Attach(_hwnd, IDC_AUTO_PROC );
@@ -94,9 +99,38 @@ INT_PTR MainDlg::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 
     LoadConfig( _defConfig );
 
+    ApplyLanguage();
+
     return TRUE;
 }
 
+void MainDlg::ApplyLanguage()
+{
+    // Menu
+    lang::LocalizeMenu( GetMenu( _hwnd ) );
+    // Repaint the menu bar immediately (otherwise it only refreshes on hover)
+    DrawMenuBar( _hwnd );
+
+    // Dialog controls (caption, buttons, statics, list columns, status bar)
+    lang::LocalizeDialog( _hwnd );
+
+    // Force an immediate repaint of the dialog and all child controls
+    RedrawWindow( _hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW );
+}
+
+INT_PTR MainDlg::OnLanguageEn( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+{
+    lang::SetLang( lang::Lang::English );
+    ApplyLanguage();
+    return TRUE;
+}
+
+INT_PTR MainDlg::OnLanguageZh( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+{
+    lang::SetLang( lang::Lang::Chinese );
+    ApplyLanguage();
+    return TRUE;
+}
 INT_PTR MainDlg::OnClose( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if(_procList.selection() != -1 && !_images.empty())
@@ -109,6 +143,27 @@ INT_PTR MainDlg::OnDropDown( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 {
     if (LOWORD( wParam ) == IDC_COMBO_PROC)
         FillProcessList();
+
+    return TRUE;
+}
+
+INT_PTR MainDlg::OnFilterChange( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+{
+    if (LOWORD( wParam ) == IDC_PROC_FILTER)
+    {
+        // Live-filter the cached process list by PID or name as the user types
+        ApplyProcessFilter();
+    }
+
+    return TRUE;
+}
+
+INT_PTR MainDlg::OnFilterHelp( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+{
+    Message::ShowInfo(
+        hDlg,
+        lang::Tr( L"Type a process name or PID number in the filter field, then open the dropdown to see matching results." ),
+        lang::Tr( L"Filter help" ) );
 
     return TRUE;
 }
